@@ -46,6 +46,12 @@ public class ConnectorPane extends Pane {
      * 连接类型
      */
     private final ComboBox<String> connectType;
+
+    /**
+     * 数据库名称
+     */
+    private final TextField dbName;
+
     /**
      * 用户名
      */
@@ -62,6 +68,8 @@ public class ConnectorPane extends Pane {
      * 是否需要输入用户信息
      */
     private final CheckBox authCheck;
+
+    private final Label connTypeLabel;
     /**
      * 在文件中的配置信息
      */
@@ -85,6 +93,8 @@ public class ConnectorPane extends Pane {
         connectType.getItems().add("tcp");
         connectType.getItems().add("ssl");
         connectType.setPromptText("tcp");
+        dbName = new TextField();
+        dbName.setPromptText("请输入数据库名称");
         username = new TextField();
         username.setPromptText("请输入用户名");
         password = new PasswordField();
@@ -93,6 +103,7 @@ public class ConnectorPane extends Pane {
         connectButton.setId("connectButton");
         authCheck = new CheckBox("用户名和密码");
         authCheck.setSelected(true);
+        connTypeLabel = new Label();
     }
 
     /**
@@ -105,22 +116,41 @@ public class ConnectorPane extends Pane {
         controlsAction();
         controlsPosition();
         controlStyle();
+        multiAdapte(type);
         this.extendFunction = function;
         this.clientType = type;
         this.propertiesFile = propertiesFile;
-        try (FileInputStream fi = new FileInputStream(propertiesFile);
-             BufferedReader bf = new BufferedReader(new InputStreamReader(fi, StandardCharsets.UTF_8))) {
-            properties = new OrderedProperties();
-            properties.load(bf);
-            if (!ObjectUtils.isEmpty(properties)) {
-                String num = properties.getProperty(clientType.toString().toLowerCase() + ConnectorConst.CONNECT_CLIENT_NUM);
-                if (!ObjectUtils.isEmpty(num) && !"0".equals(num)) {
-                    currentPropertiesNum = Integer.valueOf(num);
-                    loadPropertiesHistory(currentPropertiesNum);
-                }
+//        try (FileInputStream fi = new FileInputStream(propertiesFile);
+//             BufferedReader bf = new BufferedReader(new InputStreamReader(fi, StandardCharsets.UTF_8))) {
+//            properties = new OrderedProperties();
+//            properties.load(bf);
+//            if (!ObjectUtils.isEmpty(properties)) {
+//                String num = properties.getProperty(clientType.toString().toLowerCase() + ConnectorConst.CONNECT_CLIENT_NUM);
+//                if (!ObjectUtils.isEmpty(num) && !"0".equals(num)) {
+//                    currentPropertiesNum = Integer.valueOf(num);
+//                    loadPropertiesHistory(currentPropertiesNum);
+//                }
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    private void multiAdapte(ClientType type) {
+        switch (type) {
+            case POSTGRES: {
+                connectType.setVisible(false);
+                connTypeLabel.setText("数据库名");
+                break;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            case AMQ: {
+                dbName.setVisible(false);
+                connTypeLabel.setText("连接类型");
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 
@@ -147,7 +177,6 @@ public class ConnectorPane extends Pane {
         addressHistory.setPrefHeight(41);
         addressHistory.setStyle("-fx-font-size: 15px");
         this.getChildren().add(addressHistory);
-        Label connTypeLabel = new Label("连接方式");
         connTypeLabel.setLayoutX(98);
         connTypeLabel.setLayoutY(113);
         connTypeLabel.setPrefWidth(80);
@@ -161,6 +190,12 @@ public class ConnectorPane extends Pane {
         connectType.setPrefHeight(32);
         connectType.setStyle("-fx-font-size: 15px");
         this.getChildren().add(connectType);
+        dbName.setLayoutX(229);
+        dbName.setLayoutY(117);
+        dbName.setPrefWidth(160);
+        dbName.setPrefHeight(40);
+        dbName.setStyle("-fx-font-size: 15px");
+        this.getChildren().add(dbName);
         authCheck.setLayoutX(98);
         authCheck.setLayoutY(175);
         authCheck.setPrefWidth(120);
@@ -207,10 +242,10 @@ public class ConnectorPane extends Pane {
 
     private void controlStyle() {
         this.setId("connectPane");
-        AnchorPane.setBottomAnchor(this,-0d);
-        AnchorPane.setLeftAnchor(this,-0d);
-        AnchorPane.setRightAnchor(this,-0d);
-        AnchorPane.setTopAnchor(this,-0d);
+        AnchorPane.setBottomAnchor(this, -0d);
+        AnchorPane.setLeftAnchor(this, -0d);
+        AnchorPane.setRightAnchor(this, -0d);
+        AnchorPane.setTopAnchor(this, -0d);
         setStyle("-fx-background-image: url(/image/cbk.jpg);-fx-background-size: cover;");
         connectButton.setTextFill(Color.WHITE);
         getStylesheets().add(this.getClass().getResource("/css/connectStyle.css").toExternalForm());
@@ -228,15 +263,25 @@ public class ConnectorPane extends Pane {
     public void connect() {
         connectButton.setDisable(true);
         // 使用旋转器进行旋转
-        RotateTransition rotateTransition=new RotateTransition(Duration.seconds(1),connectButton);
+        RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), connectButton);
         // 设置参数并进行旋转
         connectRotate(rotateTransition);
         String name = username.getText();
         String pwd = password.getText();
-        String connType = connectType.getSelectionModel().selectedItemProperty().getValue();
-        // 如果没有设置连接方式，就设置成默认的连接方式
-        if (ObjectUtils.isEmpty(connType)) {
-            connType = connectType.getPromptText();
+        String connType;
+        if (clientType.equals(ClientType.POSTGRES)) {
+            connType = dbName.getText();
+            // 如果没有设置数据库名称就提前报错
+            if (ObjectUtils.isEmpty(connType)) {
+                new TipsPage("请填写数据库名称", null);
+                return;
+            }
+        } else {
+            connType = connectType.getSelectionModel().selectedItemProperty().getValue();
+            // 如果没有设置连接方式，就设置成默认的连接方式
+            if (ObjectUtils.isEmpty(connType)) {
+                connType = connectType.getPromptText();
+            }
         }
         // 判断一下输入的地址是否正常
         if (!ipCheck(chooseAddress)) {
@@ -264,7 +309,7 @@ public class ConnectorPane extends Pane {
         rotateEnd(rotateTransition);
     }
 
-    private void connectRotate(RotateTransition rotateTransition){
+    private void connectRotate(RotateTransition rotateTransition) {
         connectButton.setLayoutX(286);
         connectButton.setMaxWidth(40);
         connectButton.setStyle("-fx-background-radius: 20px;");
@@ -275,13 +320,12 @@ public class ConnectorPane extends Pane {
         rotateTransition.play();
     }
 
-    private void rotateEnd(RotateTransition rotateTransition){
+    private void rotateEnd(RotateTransition rotateTransition) {
         connectButton.setLayoutX(226);
         connectButton.setMinWidth(207);
         connectButton.setStyle("-fx-background-radius: 10px;");
         rotateTransition.stop();
     }
-
 
 
     /**
