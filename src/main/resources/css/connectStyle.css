@@ -1,0 +1,40 @@
+#connectButton{
+    -fx-background-color: #79de7f;
+    -fx-border-color: #79de7f;
+    -fx-color: #FFF;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-font-size: 18px;
+}
+
+#connectButton:hover{
+    -fx-background-color: #A5DE37;
+    -fx-border-color: #A5DE37;
+    -fx-color: #FFF;
+}
+
+#connectButton:pressed{
+    -fx-background-color: #B2B2B2;
+    -fx-border-color: #B2B2B2;
+}
+#connectButton:disabled{
+    -fx-background-color: #FF3030;
+    -fx-border-color: #FF3030;
+}
+
+#executorBtn{
+    -fx-background-color: #e03f37;
+    -fx-border-color: #e03f37;
+    -fx-color: #FFF;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+#executorBtn:hover{
+    -fx-background-color: #ff9ba1;
+}
+
+#executorBtn:pressed{
+    -fx-background-color: #B2B2B2;
+}
+

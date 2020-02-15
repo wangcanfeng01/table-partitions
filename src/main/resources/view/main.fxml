@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="bottom" prefHeight="400.0" prefWidth="600.0"
+            style="-fx-background-image: url(/image/cbk.jpg);-fx-background-size: cover;"
+            stylesheets="@/css/connectStyle.css" xmlns="http://javafx.com/javafx/8.0.172-ea"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.wcf.util.tp.controller.MainController">
+    <children>
+        <Label layoutX="140.0" layoutY="46.0" prefHeight="40.0" prefWidth="80.0" text="表名称" textFill="WHITE">
+            <font>
+                <Font name="Microsoft YaHei Bold" size="18.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="tableName" layoutX="220.0" layoutY="46.0" prefHeight="40.0" prefWidth="200.0"
+                   promptText="请输入带分区的表名称"/>
+        <Label layoutX="140.0" layoutY="118.0" prefHeight="40.0" prefWidth="80.0" text="分区数" textFill="WHITE">
+            <font>
+                <Font name="Microsoft YaHei Bold" size="18.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="partitions" layoutX="220.0" layoutY="118.0" prefHeight="40.0" prefWidth="200.0"
+                   promptText="请输入待分区数"/>
+        <Label layoutX="87.0" layoutY="191.0" prefHeight="40.0" prefWidth="115.0" text="分区依赖列名" textFill="WHITE">
+            <font>
+                <Font name="Microsoft YaHei Bold" size="18.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="colName" layoutX="220.0" layoutY="191.0" prefHeight="40.0" prefWidth="200.0"
+                   promptText="请输入分区依赖列名称"/>
+        <Button fx:id="executorBtn" layoutX="205.0" layoutY="253.0" mnemonicParsing="false"
+                onAction="#executePartitions" prefHeight="40.0" prefWidth="230.0" text="开始分表">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Button>
+        <Label layoutX="70.0" layoutY="302.0" prefHeight="40.0" prefWidth="146.0" text="查询需增加条件" textFill="WHITE">
+            <font>
+                <Font name="Microsoft YaHei Bold" size="18.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="selectAppend" editable="false" layoutX="47.0" layoutY="342.0" prefHeight="40.0"
+                   prefWidth="537.0" promptText="拼接上我查询才能快起来"/>
+    </children>
+</AnchorPane>
