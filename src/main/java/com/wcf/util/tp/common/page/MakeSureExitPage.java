@@ -1,5 +1,6 @@
 package com.wcf.util.tp.common.page;
 
+import com.wcf.util.tp.common.utils.ThreadPoolUtils;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -52,6 +53,7 @@ public class MakeSureExitPage {
         btn1.setOnAction(event -> {
             main.close();
             stage.close();
+            ThreadPoolUtils.shutdown();
         });
 
         Button btn2 = new Button("取消");

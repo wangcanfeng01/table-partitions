@@ -2,6 +2,7 @@ package com.wcf.util.tp.control;
 
 import com.wcf.util.tp.common.page.TipsPage;
 import com.wcf.util.tp.common.utils.ContainerUtils;
+import com.wcf.util.tp.common.utils.ThreadPoolUtils;
 import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -266,52 +267,60 @@ public class ConnectorPane extends Pane {
         RotateTransition rotateTransition = new RotateTransition(Duration.seconds(1), connectButton);
         // 设置参数并进行旋转
         connectRotate(rotateTransition);
-        String name = username.getText();
-        String pwd = password.getText();
-        String connType;
-        if (clientType.equals(ClientType.POSTGRES)) {
-            connType = dbName.getText();
-            // 如果没有设置数据库名称就提前报错
-            if (ObjectUtils.isEmpty(connType)) {
-                new TipsPage("请填写数据库名称", null);
-                return;
-            }
-        } else {
-            connType = connectType.getSelectionModel().selectedItemProperty().getValue();
-            // 如果没有设置连接方式，就设置成默认的连接方式
-            if (ObjectUtils.isEmpty(connType)) {
-                connType = connectType.getPromptText();
-            }
-        }
-        // 判断一下输入的地址是否正常
-        if (!ipCheck(chooseAddress)) {
-            new TipsPage("IP地址格式错误", null);
-            connectButton.setDisable(false);
-            // 结束旋转
-            rotateEnd(rotateTransition);
-            return;
-        }
-        if (!extendFunction.tryConnect(chooseAddress, name, pwd, connType, authCheck.isSelected())) {
-            new TipsPage("连接工厂创建失败", null);
-            connectButton.setDisable(false);
-            // 结束旋转
-            rotateEnd(rotateTransition);
-            return;
-        } else {
-            extendFunction.afterConnected(this);
-        }
-        // 记录一下配置信息
-        saveProperties(name, connType, pwd);
-        // 打印提示信息
-        new TipsPage("连接工厂创建完毕", this);
-        connectButton.setDisable(false);
         // 结束旋转
-        rotateEnd(rotateTransition);
+        ThreadPoolUtils.getExecutor().execute(()->{
+//            String name = username.getText();
+//            String pwd = password.getText();
+//            String connType;
+//            if (clientType.equals(ClientType.POSTGRES)) {
+//                connType = dbName.getText();
+//                // 如果没有设置数据库名称就提前报错
+//                if (ObjectUtils.isEmpty(connType)) {
+//                    new TipsPage("请填写数据库名称", null);
+//                    return;
+//                }
+//            } else {
+//                connType = connectType.getSelectionModel().selectedItemProperty().getValue();
+//                // 如果没有设置连接方式，就设置成默认的连接方式
+//                if (ObjectUtils.isEmpty(connType)) {
+//                    connType = connectType.getPromptText();
+//                }
+//            }
+//            // 判断一下输入的地址是否正常
+//            if (!ipCheck(chooseAddress)) {
+//                new TipsPage("IP地址格式错误", null);
+//                connectButton.setDisable(false);
+//                // 结束旋转
+//                rotateEnd(rotateTransition);
+//                return;
+//            }
+//            if (!extendFunction.tryConnect(chooseAddress, name, pwd, connType, authCheck.isSelected())) {
+//                new TipsPage("连接工厂创建失败", null);
+//                connectButton.setDisable(false);
+//                // 结束旋转
+//                rotateEnd(rotateTransition);
+//                return;
+//            } else {
+//                extendFunction.afterConnected(this);
+//            }
+//            // 记录一下配置信息
+//            saveProperties(name, connType, pwd);
+//            // 打印提示信息
+//            new TipsPage("连接工厂创建完毕", this);
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            connectButton.setDisable(false);
+            rotateEnd(rotateTransition);
+        });
     }
 
     private void connectRotate(RotateTransition rotateTransition) {
         connectButton.setLayoutX(286);
         connectButton.setMaxWidth(40);
+        connectButton.setMinWidth(0);
         connectButton.setStyle("-fx-background-radius: 20px;");
         rotateTransition.setFromAngle(0);
         rotateTransition.setToAngle(360);

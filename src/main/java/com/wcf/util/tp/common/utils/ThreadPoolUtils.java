@@ -9,24 +9,25 @@ public class ThreadPoolUtils {
     /**
      * 创建线程池
      */
-    public static void createThreadPool(){
-        BlockingDeque<Runnable> workQueue=new LinkedBlockingDeque<>(8);
-        executor=new ThreadPoolExecutor(5,8,60,
-                TimeUnit.SECONDS,workQueue,new ThreadPoolExecutor.AbortPolicy());
+    public static void createThreadPool() {
+        BlockingDeque<Runnable> workQueue = new LinkedBlockingDeque<>(8);
+        executor = new ThreadPoolExecutor(5, 8, 60,
+                TimeUnit.SECONDS, workQueue, new ThreadPoolExecutor.AbortPolicy());
     }
 
     /**
      * 获取线程池
+     *
      * @return
      */
-    public static ExecutorService getExecutor(){
+    public static ExecutorService getExecutor() {
         return executor;
     }
 
     /**
      * 关闭线程池
      */
-    public static void shutdown(){
+    public static void shutdown() {
         executor.shutdown();
     }
 }
